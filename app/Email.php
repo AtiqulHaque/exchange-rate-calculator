@@ -1,5 +1,7 @@
 <?php
 namespace App;
+use InvalidArgumentException;
+
 final class Email
 {
     private $email;
