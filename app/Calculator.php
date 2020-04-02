@@ -3,9 +3,11 @@ namespace App;
 
 class Calculator
 {
+    public $amounts = [];
+
     public function process($path)
     {
-        $fileData = $this->fileRead($path);
+        $fileData = $this->readFile($path);
 
         if(!empty($fileData)){
             foreach ($fileData as $eachData){
@@ -17,37 +19,36 @@ class Calculator
                     $rate = $this->getExchangeRates($entity->currency);
 
                     if ($entity->isCurrencyEuro() or $rate == 0) {
-                        $amntFixed = $entity->amount;
+                        $finalAmount = $entity->amount;
                     }
                     if (!$entity->isCurrencyEuro() or $rate > 0) {
-                        $amntFixed = $entity->amount / $rate;
+                        $finalAmount = $entity->amount / $rate;
                     }
 
-                    if($entity->isEuValue()){
-                        echo $amntFixed * 0.01;
-                    } else {
-                        echo $amntFixed * 0.02;
-                    }
+                    $this->amounts[] = $entity->isEuValue() ? $finalAmount * 0.01 : $finalAmount * 0.02;
 
-                    print "\n";
                 }
                 
             }
         }
 
+        return $this;
+
     }
 
-    public function fileRead($path)
+    public function readFile($path)
     {
         $content = [];
-        $fileContent = file_get_contents($path);
+        if(file_exists($path)){
+            $fileContent = file_get_contents($path);
 
-        foreach (explode("\n", $fileContent) as $eachLine) {
-            if (!empty($eachLine)) $content[] = $eachLine;
+            foreach (explode("\n", $fileContent) as $eachLine) {
+                if (!empty($eachLine)) $content[] = $eachLine;
+            }
         }
+
         return $content;
     }
-
 
     public function getLookupValue($bin)
     {
@@ -81,6 +82,13 @@ class Calculator
             return 0;
         } catch(\Exception $e){
             return 0;
+        }
+    }
+
+    public function printAmounts(){
+        foreach ($this->amounts as $each){
+            print($each);
+            print("\n");
         }
     }
 
