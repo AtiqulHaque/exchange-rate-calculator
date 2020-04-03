@@ -43,9 +43,9 @@ class Entity
         $this->currency = $obj->currency;
     }
 
-    public function isEuValue()
+    public function isEuValue($currency)
     {
-        if (in_array($this->currency, $this->euValue)) return true;
+        if (in_array($currency, $this->euValue)) return true;
         return false;
     }
 

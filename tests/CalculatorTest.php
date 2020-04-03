@@ -1,17 +1,78 @@
 <?php
-use App\Email;
+use App\Calculator;
 use PHPUnit\Framework\TestCase;
 
 final class CalculatorTest extends TestCase
 {
-    public function testFileRead(): void
+    public function testFileReadWhenEmpty(): void
     {
-        $this->calculatorService = $this->getMockBuilder(\App\Calculator::class)
-            ->setMethods(['readFile'])->getMock();
-        //$this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"EUR"}']);
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile'])
+            ->getMock();
         $this->calculatorService->method('readFile')->willReturn([]);
-        $this->calculatorService->process('demo-path');
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(0,count($this->calculatorService->getCommissions()),'Check result is empty when input file is empty');
+    }
 
-        var_dump($this->calculatorService->amounts);die;
+    public function testCalculationWhenLookupIsEmpty(): void
+    {
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile','getLookupValue'])
+            ->getMock();
+        $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"EUR"}']);
+        $this->calculatorService->method('getLookupValue')->willReturn(false);
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(0,count($this->calculatorService->getCommissions()),'Check result is empty when input file is empty');
+    }
+
+    public function testCalculationWhenLookupIsNotEmpty(): void
+    {
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile','getLookupValue','getExchangeRates'])
+            ->getMock();
+        $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"EUR"}']);
+        $this->calculatorService->method('getLookupValue')->willReturn("DK");
+        $this->calculatorService->method('getExchangeRates')->willReturn(0);
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(1,$this->calculatorService->getCommissions()[0]);
+
+
+    }
+
+    public function testCalculationWhenExchangeRateIsZero(): void
+    {
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile','getLookupValue','getExchangeRates'])
+            ->getMock();
+        $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"EUR"}']);
+        $this->calculatorService->method('getLookupValue')->willReturn("DK");
+        $this->calculatorService->method('getExchangeRates')->willReturn(0);
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(1,$this->calculatorService->getCommissions()[0]);
+    }
+
+    public function testCalculationWhenCurrencyIsNotEur(): void
+    {
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile','getLookupValue','getExchangeRates'])
+            ->getMock();
+        $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"USD"}']);
+        $this->calculatorService->method('getLookupValue')->willReturn("DK");
+        $this->calculatorService->method('getExchangeRates')->willReturn(1);
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(1,$this->calculatorService->getCommissions()[0]);
+    }
+
+    public function testCalculationWhenCountryAlphaIsNotValid(): void
+    {
+        $this->calculatorService = $this->getMockBuilder(Calculator::class)
+            ->setMethods(['readFile','getLookupValue','getExchangeRates'])
+            ->getMock();
+
+        $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"USD"}']);
+        $this->calculatorService->method('getLookupValue')->willReturn("DEMO");
+        $this->calculatorService->method('getExchangeRates')->willReturn(1);
+        $this->calculatorService->calculateCommission('demo-file-path');
+        $this->assertEquals(2.0,$this->calculatorService->getCommissions()[0]);
     }
 }
