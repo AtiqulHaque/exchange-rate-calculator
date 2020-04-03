@@ -11,7 +11,7 @@ final class CalculatorTest extends TestCase
             ->getMock();
         $this->calculatorService->method('readFile')->willReturn([]);
         $this->calculatorService->calculateCommission('demo-file-path');
-        $this->assertEquals(0,count($this->calculatorService->getCommissions()),'Check result is empty when input file is empty');
+        $this->assertEquals(0,count($this->calculatorService->getCommissions()));
     }
 
     public function testCalculationWhenLookupIsEmpty(): void
@@ -22,7 +22,7 @@ final class CalculatorTest extends TestCase
         $this->calculatorService->method('readFile')->willReturn(['{"bin":"45717360","amount":"100.00","currency":"EUR"}']);
         $this->calculatorService->method('getLookupValue')->willReturn(false);
         $this->calculatorService->calculateCommission('demo-file-path');
-        $this->assertEquals(0,count($this->calculatorService->getCommissions()),'Check result is empty when input file is empty');
+        $this->assertEquals(0,count($this->calculatorService->getCommissions()));
     }
 
     public function testCalculationWhenLookupIsNotEmpty(): void
