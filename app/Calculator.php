@@ -2,7 +2,9 @@
 
 namespace App;
 
-use GuzzleHttp\Client;
+use App\Reader\Reader;
+use App\Services\ExchangeRateInterFace as ExchangeRate;
+use App\Services\LookUp;
 
 class Calculator
 {
@@ -10,21 +12,38 @@ class Calculator
 
     /**
      * @param $path
+     * @param Reader $fileReader
+     * @param LookUp $binLookUp
+     * @param ExchangeRate $exchangeRate
      * @return $this
      */
-    public function calculateCommission($path)
-    {
-        $fileData = $this->readFile($path);
+    public function calculateCommission(
+        $path,
+        Reader $fileReader,
+        LookUp $binLookUp,
+        ExchangeRate $exchangeRate
+    ) {
+        $fileData = $fileReader->read($path);
 
         if (!empty($fileData)) {
             foreach ($fileData as $eachData) {
 
                 $entity = new  Entity(json_decode($eachData));
 
-                $lookUpValue = $this->getLookupValue($entity->bin);
+                try {
+                    $lookUpValue = $binLookUp->getLookUpValue($entity->bin);
+                } catch (\Exception $e) {
+                    $lookUpValue = null;
+                }
 
                 if (!empty($lookUpValue)) {
-                    $rate = $this->getExchangeRates($entity->currency);
+
+                    try {
+                        $rate = $exchangeRate->getRate($entity->currency);
+                    } catch (\Exception $e) {
+                        $rate = 0;
+                    }
+
 
                     if ($entity->isCurrencyEuro() or $rate == 0) {
                         $finalAmount = $entity->amount;
@@ -34,7 +53,8 @@ class Calculator
                         $finalAmount = $entity->amount / $rate;
                     }
 
-                    $this->commissions[] = round(($entity->isEuValue($lookUpValue) ? $finalAmount * 0.01 : $finalAmount * 0.02), 2);
+                    $this->commissions[] = round(($entity->isEuValue($lookUpValue) ? $finalAmount * 0.01 : $finalAmount * 0.02),
+                        2);
 
                 }
 
@@ -43,72 +63,6 @@ class Calculator
 
         return $this;
 
-    }
-
-    /**
-     * @param $path
-     * @return array
-     */
-    protected function readFile($path)
-    {
-        $content = [];
-        if (file_exists($path)) {
-            $fileContent = file_get_contents($path);
-
-            foreach (explode("\n", $fileContent) as $eachLine) {
-                if (!empty($eachLine)) $content[] = $eachLine;
-            }
-        }
-
-        return $content;
-    }
-
-    /**
-     * @param $bin
-     * @return bool
-     */
-    protected function getLookupValue($bin)
-    {
-        if (empty($bin)) return false;
-
-        try {
-            $client = new Client(['base_uri' => 'https://lookup.binlist.net/']);
-            $response = $client->request('GET', "{$bin}");
-            if ($response->getStatusCode() == 200) {
-                $body = $response->getBody();
-                $binResults = json_decode($body->getContents());
-                return $binResults->country->alpha2;
-            }
-            return false;
-        } catch (\Exception $e) {
-            return false;
-        }
-
-    }
-
-    /**
-     * @param $currency
-     * @return int
-     */
-    protected function getExchangeRates($currency)
-    {
-        if (empty($currency)) return 0;
-
-        try {
-            $client = new Client(['base_uri' => 'https://api.exchangeratesapi.io/']);
-            $response = $client->request('GET', "latest");
-
-            if ($response->getStatusCode() == 200) {
-                $body = $response->getBody();
-                $rates = json_decode($body->getContents(), true);
-                if (!empty($rates['rates']) && !empty($rates['rates'][$currency])) {
-                    return $rates['rates'][$currency];
-                }
-            }
-            return 0;
-        } catch (\Exception $e) {
-            return 0;
-        }
     }
 
     /**
