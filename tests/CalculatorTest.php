@@ -178,6 +178,7 @@ final class CalculatorTest extends TestCase
 
         $calculatorService = new Calculator();
 
+
         $calculatorService->calculateCommission('demo-file-path',$fileReader,$binLookUp,$exchangeRate);
 
         $this->assertEquals(0,count($calculatorService->getCommissions()));
