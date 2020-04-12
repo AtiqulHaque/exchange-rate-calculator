@@ -1,8 +1,8 @@
 <?php
 use App\Calculator;
 use App\Reader\FileReader;
-use App\Services\BinLookUp;
-use App\Services\ExchangeRate;
+use App\Services\BinLookUpService;
+use App\Services\ExchangeRateService;
 use PHPUnit\Framework\TestCase;
 
 final class CalculatorTest extends TestCase
@@ -13,11 +13,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -37,11 +37,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -62,11 +62,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -87,11 +87,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -113,11 +113,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -138,11 +138,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 
@@ -164,11 +164,11 @@ final class CalculatorTest extends TestCase
             ->setMethods(['read'])
             ->getMock();
 
-        $binLookUp =   $this->getMockBuilder(BinLookUp::class)
+        $binLookUp =   $this->getMockBuilder(BinLookUpService::class)
             ->setMethods(['getLookUpValue'])
             ->getMock();
 
-        $exchangeRate =   $this->getMockBuilder(ExchangeRate::class)
+        $exchangeRate =   $this->getMockBuilder(ExchangeRateService::class)
             ->setMethods(['getRate'])
             ->getMock();
 

@@ -1,12 +1,10 @@
 <?php
-
-
 namespace App\Services;
 
 
 use GuzzleHttp\Client;
 
-class BinLookUp implements LookUp
+class BinLookUpService implements LookUp
 {
 
     /**

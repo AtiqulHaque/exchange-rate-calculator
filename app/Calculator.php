@@ -5,6 +5,7 @@ namespace App;
 use App\Reader\Reader;
 use App\Services\ExchangeRateInterFace as ExchangeRate;
 use App\Services\LookUp;
+use Exception;
 
 class Calculator
 {
@@ -17,12 +18,8 @@ class Calculator
      * @param ExchangeRate $exchangeRate
      * @return $this
      */
-    public function calculateCommission(
-        $path,
-        Reader $fileReader,
-        LookUp $binLookUp,
-        ExchangeRate $exchangeRate
-    ) {
+    public function calculateCommission($path, Reader $fileReader, LookUp $binLookUp, ExchangeRate $exchangeRate)
+    {
         $fileData = $fileReader->read($path);
 
         if (!empty($fileData)) {
@@ -32,7 +29,7 @@ class Calculator
 
                 try {
                     $lookUpValue = $binLookUp->getLookUpValue($entity->bin);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $lookUpValue = null;
                 }
 
@@ -40,7 +37,7 @@ class Calculator
 
                     try {
                         $rate = $exchangeRate->getRate($entity->currency);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $rate = 0;
                     }
 
@@ -53,8 +50,9 @@ class Calculator
                         $finalAmount = $entity->amount / $rate;
                     }
 
-                    $this->commissions[] = round(($entity->isEuValue($lookUpValue) ? $finalAmount * 0.01 : $finalAmount * 0.02),
-                        2);
+                    $this->commissions[] = round(
+                        ($entity->isEuValue($lookUpValue) ? $finalAmount * 0.01 : $finalAmount * 0.02)
+                        , 2);
 
                 }
 

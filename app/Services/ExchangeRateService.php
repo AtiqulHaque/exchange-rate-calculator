@@ -5,9 +5,8 @@ namespace App\Services;
 
 
 use GuzzleHttp\Client;
-use http\Exception;
 
-class ExchangeRate implements ExchangeRateInterFace
+class ExchangeRateService implements ExchangeRateInterFace
 {
 
     /**
